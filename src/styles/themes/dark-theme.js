@@ -1,36 +1,38 @@
-var Colors = require('../colors');
-var ColorManipulator = require('../../utils/color-manipulator');
+let Colors = require('../colors');
+let ColorManipulator = require('../../utils/color-manipulator');
 
-var DarkTheme = {
-  getPalette: function() {
+
+let DarkTheme = {
+  getPalette() {
     return {
       textColor: Colors.fullWhite,
       canvasColor: '#303030',
       borderColor:  ColorManipulator.fade(Colors.fullWhite, 0.3), //Colors.grey300
-      disabledColor: ColorManipulator.fade(Colors.fullWhite, 0.3)
+      disabledColor: ColorManipulator.fade(Colors.fullWhite, 0.3),
+      primary1Color: Colors.teal200,
     };
   },
-  getComponentThemes: function(palette) {
-    var cardColor = Colors.grey800;
+  getComponentThemes(palette) {
+    let cardColor = Colors.grey800;
     return {
       floatingActionButton: {
         disabledColor: ColorManipulator.fade(palette.textColor, 0.12),
       },
       leftNav: {
-        color: cardColor
+        color: cardColor,
       },
       menu: {
         backgroundColor: cardColor,
-        containerBackgroundColor: cardColor
+        containerBackgroundColor: cardColor,
       },
       menuItem: {
         hoverColor: 'rgba(255, 255, 255, .03)',
-      },      
+      },
       menuSubheader: {
         borderColor: 'rgba(255, 255, 255, 0.3)',
       },
       paper: {
-        backgroundColor: cardColor
+        backgroundColor: cardColor,
       },
       raisedButton: {
         color: Colors.grey500,
@@ -51,7 +53,7 @@ var DarkTheme = {
         selectionColor: Colors.cyan200,
       },
     };
-  }
+  },
 };
 
 module.exports = DarkTheme;

@@ -1,43 +1,51 @@
-var React = require('react/addons');
-var StylePropable = require('../mixins/style-propable');
-var AutoPrefix = require('../styles/auto-prefix');
-var Transitions = require('../styles/transitions');
+let React = require('react/addons');
+let StylePropable = require('../mixins/style-propable');
+let AutoPrefix = require('../styles/auto-prefix');
+let Transitions = require('../styles/transitions');
 
-var SlideInChild = React.createClass({
+
+let SlideInChild = React.createClass({
 
   mixins: [StylePropable],
 
   propTypes: {
+    enterDelay: React.PropTypes.number,
     //This callback is needed bacause the direction could change
     //when leaving the dom
-    getLeaveDirection: React.PropTypes.func.isRequired
+    getLeaveDirection: React.PropTypes.func.isRequired,
   },
 
-  componentWillEnter: function(callback) {
-    var style = React.findDOMNode(this).style;
-    var x = this.props.direction === 'left' ? '100%' :
+  getDefaultProps: function() {
+    return {
+      enterDelay: 0,
+    };
+  },
+
+  componentWillEnter(callback) {
+    let style = React.findDOMNode(this).style;
+    let x = this.props.direction === 'left' ? '100%' :
       this.props.direction === 'right' ? '-100%' : '0';
-    var y = this.props.direction === 'up' ? '100%' :
+    let y = this.props.direction === 'up' ? '100%' :
       this.props.direction === 'down' ? '-100%' : '0';
 
     style.opacity = '0';
     AutoPrefix.set(style, 'transform', 'translate3d(' + x + ',' + y + ',0)');
 
-    setTimeout(callback, 0);
+    setTimeout(callback, this.props.enterDelay);
   },
 
-  componentDidEnter: function() {
-    var style = React.findDOMNode(this).style;
+  componentDidEnter() {
+    let style = React.findDOMNode(this).style;
     style.opacity = '1';
     AutoPrefix.set(style, 'transform', 'translate3d(0,0,0)');
   },
 
-  componentWillLeave: function(callback) {
-    var style = React.findDOMNode(this).style;
-    var direction = this.props.getLeaveDirection();
-    var x = direction === 'left' ? '-100%' :
+  componentWillLeave(callback) {
+    let style = React.findDOMNode(this).style;
+    let direction = this.props.getLeaveDirection();
+    let x = direction === 'left' ? '-100%' :
       direction === 'right' ? '100%' : '0';
-    var y = direction === 'up' ? '-100%' :
+    let y = direction === 'up' ? '-100%' :
       direction === 'down' ? '100%' : '0';
 
     style.opacity = '0';
@@ -46,28 +54,30 @@ var SlideInChild = React.createClass({
     setTimeout(callback, 450);
   },
 
-  render: function() {
-    var {
-      styles,
-      ...other
+  render() {
+    let {
+      children,
+      enterDelay,
+      getLeaveDirection,
+      style,
+      ...other,
     } = this.props;
 
-    styles = this.mergeAndPrefix({
+    let mergedRootStyles = this.mergeAndPrefix({
       position: 'absolute',
       height: '100%',
       width: '100%',
-      top: '0px',
-      left: '0px',
-      transition: Transitions.easeOut()
-    }, this.props.style);
+      top: 0,
+      left: 0,
+      transition: Transitions.easeOut(null, ['transform', 'opacity']),
+    }, style);
 
     return (
-      <div {...other}
-        style={styles}>
-        {this.props.children}
+      <div {...other} style={mergedRootStyles}>
+        {children}
       </div>
     );
-  }
+  },
 
 });
 

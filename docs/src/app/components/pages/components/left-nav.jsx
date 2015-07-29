@@ -1,9 +1,7 @@
-var React = require('react');
-var mui = require('mui');
-var MenuItem = mui.MenuItem;
-var LeftNav = mui.LeftNav;
-var RaisedButton = mui.RaisedButton;
-var ComponentDoc = require('../../component-doc.jsx');
+let React = require('react');
+let { LeftNav, MenuItem, RaisedButton } = require('material-ui');
+let ComponentDoc = require('../../component-doc');
+
 
 class LeftNavPage extends React.Component {
 
@@ -18,7 +16,7 @@ class LeftNavPage extends React.Component {
   }
 
   render() {
-    var menuItems = [
+    let menuItems = [
       { route: 'get-started', text: 'Get Started' },
       { route: 'customization', text: 'Customization' },
       { route: 'components', text: 'Components' },
@@ -28,7 +26,7 @@ class LeftNavPage extends React.Component {
       { type: MenuItem.Types.LINK, payload: 'https://www.google.com', text: 'Disabled Link', disabled: true }
     ];
 
-    var code =
+    let code =
       'menuItems = [\n' +
       '  { route: \'get-started\', text: \'Get Started\' },\n' +
       '  { route: \'customization\', text: \'Customization\' },\n' +
@@ -50,12 +48,14 @@ class LeftNavPage extends React.Component {
       '     disabled: true \n' +
       '  },\n' +
       '];\n\n' +
+      '//Toggle the LeftNav\n'+
+      'this.refs.leftNav.toggle();\n\n'+
       '//Docked Left Nav\n' +
-      '<LeftNav menuItems={menuItems} />\n\n' +
+      '<LeftNav ref="leftNav" menuItems={menuItems} />\n\n' +
       '//Hideable Left Nav\n' +
-      '<LeftNav docked={false} menuItems={menuItems} />\n\n';
+      '<LeftNav ref="leftNav" docked={false} menuItems={menuItems} />\n\n';
 
-    var componentInfo = [
+    let componentInfo = [
       {
         name: 'Props',
         infoArray: [
@@ -122,7 +122,8 @@ class LeftNavPage extends React.Component {
             name: 'onChange',
             header: 'function(e, selectedIndex, menuItem)',
             desc: 'Fired when a menu item is clicked that is not the one currently ' +
-              'selected.'
+              'selected. Note that this requires the injectTapEventPlugin component. ' +
+              'See the "Get Started" section for more detail.'
           },
           {
             name: 'onNavOpen',

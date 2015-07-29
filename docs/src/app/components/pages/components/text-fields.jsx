@@ -1,15 +1,15 @@
-var React = require('react/addons');
-var mui = require('mui');
-var ClearFix = mui.ClearFix;
-var TextField = mui.TextField;
-var StyleResizable = mui.Mixins.StyleResizable;
-var ComponentDoc = require('../../component-doc.jsx');
+let React = require('react/addons');
+let { ClearFix, Mixins, SelectField, TextField } = require('material-ui');
+let ComponentDoc = require('../../component-doc');
 
-var TextFieldsPage = React.createClass({
+let { StyleResizable } = Mixins;
+
+
+let TextFieldsPage = React.createClass({
 
   mixins: [StyleResizable, React.addons.LinkedStateMixin],
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       errorText: 'This field is required.',
       error2Text: 'This field must be numeric.',
@@ -18,12 +18,15 @@ var TextFieldsPage = React.createClass({
       propValue: 'Prop Value',
       floatingPropValue: 'Prop Value',
       valueLinkValue: 'Value Link',
+      selectValue: undefined,
+      selectValue2: undefined,
+      selectValueLinkValue: 4,
       floatingValueLinkValue: 'Value Link'
     };
   },
 
-  getStyles: function() {
-    var styles = {
+  getStyles() {
+    let styles = {
       group: {
         width: '100%',
         float: 'left',
@@ -41,91 +44,126 @@ var TextFieldsPage = React.createClass({
     return styles;
   },
 
-  render: function() {
+  render() {
 
-    var code =
-      '//In Line Hint Text\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text" />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  defaultValue="Default Value" />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  value={this.state.propValue}\n' +
-      '  onChange={this._handleInputChange} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  valueLink={this.linkState(\'valueLinkValue\')} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text (MultiLine)"\n' +
-      '  multiLine={true} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  errorText={this.state.errorText}\n' +
-      '  onChange={this._handleErrorInputChange} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  errorText={this.state.error2Text}\n' +
-      '  onChange={this._handleError2InputChange}\n' +
-      '  defaultValue="abc" />\n' +
-      '<TextField\n' +
-      '  hintText="Disabled Hint Text"\n' +
-      '  disabled={true} />\n' +
-      '<TextField\n' +
-      '  hintText="Disabled Hint Text"\n' +
-      '  disabled={true}\n' +
-      '  defaultValue="Disabled With Value" />\n\n' +
 
-      '//Floating Hint Text Labels\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  floatingLabelText="Floating Label Text" />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  defaultValue="Default Value"\n' +
-      '  floatingLabelText="Floating Label Text" />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  floatingLabelText="Floating Label Text"\n' +
-      '  value={this.state.floatingPropValue}\n' +
-      '  onChange={this._handleFloatingInputChange} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  floatingLabelText="Floating Label Text"\n' +
-      '  valueLink={this.linkState(\'floatingValueLinkValue\')} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text (MultiLine)"\n' +
-      '  floatingLabelText="Floating Label Text"\n' +
-      '  multiLine={true} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  errorText={this.state.floatingErrorText}\n' +
-      '  floatingLabelText="Floating Label Text"\n' +
-      '  onChange={this._handleFloatingErrorInputChange} />\n' +
-      '<TextField\n' +
-      '  hintText="Hint Text"\n' +
-      '  errorText={this.state.floatingError2Text}\n' +
-      '  defaultValue="abc"\n' +
-      '  floatingLabelText="Floating Label Text"\n' +
-      '  onChange={this._handleFloating2ErrorInputChange} />\n' +
-      '<TextField\n' +
-      '  hintText="Disabled Hint Text"\n' +
-      '  disabled={true}\n' +
-      '  floatingLabelText="Floating Label Text" />\n' +
-      '<TextField\n' +
-      '  hintText="Disabled Hint Text"\n' +
-      '  disabled={true}\n' +
-      '  defaultValue="Disabled With Value"\n' +
-      '  floatingLabelText="Floating Label Text" />'; 
+    let code = `
+      //In Line Hint Text
+      <TextField
+        hintText="Hint Text" />
+      <TextField
+        hintText="Hint Text"
+        defaultValue="Default Value" />
+      <TextField
+        hintText="Hint Text"
+        value={this.state.propValue}
+        onChange={this._handleInputChange} />
+      <TextField
+        hintText="Hint Text"
+        valueLink={this.linkState('valueLinkValue')} />
+      <TextField
+        hintText="Hint Text (MultiLine)"
+        multiLine={true} />
+      <TextField
+        hintText="The hint text can be as long as you want, it will wrap."
+        multiLine={true} />
+      <TextField
+        hintText="Hint Text"
+        errorText="The error text can be as long as you want, it will wrap." />
+      <TextField
+        hintText="Hint Text"
+        errorText={this.state.errorText}
+        onChange={this._handleErrorInputChange} />
+      <TextField
+        hintText="Hint Text"
+        errorText={this.state.error2Text}
+        onChange={this._handleError2InputChange}
+        defaultValue="abc" />
+      <TextField
+        hintText="Disabled Hint Text"
+        disabled={true} />
+      <TextField
+        hintText="Disabled Hint Text"
+        disabled={true}
+        defaultValue="Disabled With Value" />
 
-    var desc = 'This component extends the current input element and will support all of its props and events. It supports ' +
+      //Select Fields
+      <SelectField
+        value={this.state.selectValue}
+        onChange={this._handleSelectValueChange.bind(null, 'selectValue')}
+        hintText="Hint Text"
+        menuItems={menuItems} />
+      <SelectField
+        valueLink={this.linkState('selectValueLinkValue')}
+        floatingLabelText="Float Label Text"
+        valueMember="id"
+        displayMember="name"
+        menuItems={arbitraryArrayMenuItems} />
+      <SelectField
+        value={this.state.selectValue2}
+        onChange={this._handleSelectValueChange.bind(null, 'selectValue2')}
+        menuItems={arbitraryArrayMenuItems} />
+
+      //Floating Hint Text Labels
+      <TextField
+        hintText="Hint Text"
+        floatingLabelText="Floating Label Text" />
+      <TextField
+        hintText="Hint Text"
+        defaultValue="Default Value"
+        floatingLabelText="Floating Label Text" />
+      <TextField
+        hintText="Hint Text"
+        floatingLabelText="Floating Label Text"
+        value={this.state.floatingPropValue}
+        onChange={this._handleFloatingInputChange} />
+      <TextField
+        hintText="Hint Text"
+        floatingLabelText="Floating Label Text"
+        valueLink={this.linkState('floatingValueLinkValue')} />
+      <TextField
+        hintText="Hint Text (MultiLine)"
+        floatingLabelText="Floating Label Text"
+        multiLine={true} />
+      <TextField
+        hintText="Hint Text"
+        errorText={this.state.floatingErrorText}
+        floatingLabelText="Floating Label Text"
+        onChange={this._handleFloatingErrorInputChange} />
+      <TextField
+        hintText="Hint Text"
+        errorText={this.state.floatingError2Text}
+        defaultValue="abc"
+        floatingLabelText="Floating Label Text"
+        onChange={this._handleFloating2ErrorInputChange} />
+      <TextField
+        hintText="Disabled Hint Text"
+        disabled={true}
+        floatingLabelText="Floating Label Text" />
+      <TextField
+        hintText="Disabled Hint Text"
+        disabled={true}
+        defaultValue="Disabled With Value"
+        floatingLabelText="Floating Label Text" />
+      <TextField
+        hintText="Password Field"
+        floatingLabelText="Password"
+        type="password" />
+    `;
+
+    let desc = 'This component extends the current input element and will support all of its props and events. It supports ' +
       'valueLink and can be controlled or uncontrolled.' ;
 
-    var componentInfo = [
+    let componentInfo = [
       {
         name: 'Props',
         infoArray: [
+          {
+            name: 'errorStyle',
+            type: 'object',
+            header: 'optional',
+            desc: 'The style object to use to override error styles.'
+          },
           {
             name: 'errorText',
             type: 'string',
@@ -137,6 +175,12 @@ var TextFieldsPage = React.createClass({
             type: 'string',
             header: 'optional',
             desc: 'The text string to use for the floating label element.'
+          },
+          {
+            name: 'fullWidth',
+            type: 'bool',
+            header: 'optional',
+            desc: 'If true, the field receives the property width 100%.'
           },
           {
             name: 'hintText',
@@ -161,6 +205,12 @@ var TextFieldsPage = React.createClass({
             type: 'object',
             header: 'optional',
             desc: 'Override the inline-styles of the TextField\'s root element.'
+          },
+          {
+            name: 'type',
+            type: 'string',
+            header: 'optional',
+            desc: 'Specifies the type of input to display such as "password" or "text".'
           }
         ]
       },
@@ -224,7 +274,21 @@ var TextFieldsPage = React.createClass({
       }
     ];
 
-    var styles = this.getStyles();
+    let styles = this.getStyles();
+    let menuItems = [
+      { payload: '1', text: 'Never' },
+      { payload: '2', text: 'Every Night' },
+      { payload: '3', text: 'Weeknights' },
+      { payload: '4', text: 'Weekends' },
+      { payload: '5', text: 'Weekly' },
+    ];
+    let arbitraryArrayMenuItems = [
+      {id:1, name:'Never'},
+      {id:2, name:'Every Night'},
+      {id:3, name:'Weeknights'},
+      {id:4, name:'Weekends'},
+      {id:5, name:'Weekly'}
+    ];
 
     return (
       <ComponentDoc
@@ -257,6 +321,14 @@ var TextFieldsPage = React.createClass({
               multiLine={true} /><br/>
             <TextField
               style={styles.textfield}
+              hintText="The hint text can be as long as you want, it will wrap."
+              multiLine={true} /><br/>
+            <TextField
+              style={styles.textfield}
+              hintText="Hint Text"
+              errorText="The error text can be as long as you want, it will wrap." /><br/>
+            <TextField
+              style={styles.textfield}
               hintText="Hint Text"
               errorText={this.state.errorText}
               onChange={this._handleErrorInputChange} /><br/>
@@ -275,6 +347,23 @@ var TextFieldsPage = React.createClass({
               hintText="Disabled Hint Text"
               disabled={true}
               defaultValue="Disabled With Value" /><br/>
+            <SelectField
+              style={styles.textfield}
+              value={this.state.selectValue}
+              onChange={this._handleSelectValueChange.bind(null, 'selectValue')}
+              hintText="Hint Text"
+              menuItems={menuItems} /><br/>
+            <SelectField
+              valueLink={this.linkState('selectValueLinkValue')}
+              floatingLabelText="Float Label Text"
+              valueMember="id"
+              displayMember="name"
+              menuItems={arbitraryArrayMenuItems} /><br/>
+            <SelectField
+              style={styles.textfield}
+              value={this.state.selectValue2}
+              onChange={this._handleSelectValueChange.bind(null, 'selectValue2')}
+              menuItems={arbitraryArrayMenuItems} />
           </div>
           <div style={styles.group}>
             <TextField
@@ -317,47 +406,57 @@ var TextFieldsPage = React.createClass({
               disabled={true}
               defaultValue="Disabled With Value"
               floatingLabelText="Floating Label Text" /><br/>
+            <TextField
+              hintText="Password Field"
+              floatingLabelText="Password"
+              type="password" /><br/>
           </div>
         </ClearFix>
       </ComponentDoc>
     );
   },
 
-  _handleErrorInputChange: function(e) {
+  _handleErrorInputChange(e) {
     this.setState({
-      errorText: e.target.value ? '' : 'This field is required.' 
+      errorText: e.target.value ? '' : 'This field is required.'
     });
   },
 
-  _handleError2InputChange: function(e) {
-    var value = e.target.value;
-    var isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
+  _handleError2InputChange(e) {
+    let value = e.target.value;
+    let isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
     this.setState({
-      error2Text: isNumeric ? '' : 'This field must be numeric.' 
+      error2Text: isNumeric ? '' : 'This field must be numeric.'
     });
   },
 
-  _handleFloatingErrorInputChange: function(e) {
+  _handleFloatingErrorInputChange(e) {
     this.setState({
-      floatingErrorText: e.target.value ? '' : 'This field is required.' 
+      floatingErrorText: e.target.value ? '' : 'This field is required.'
     });
   },
 
-  _handleFloating2ErrorInputChange: function(e) {
-    var value = e.target.value;
-    var isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
+  _handleFloating2ErrorInputChange(e) {
+    let value = e.target.value;
+    let isNumeric = !isNaN(parseFloat(value)) && isFinite(value);
     this.setState({
-      floatingError2Text: isNumeric ? '' : 'This field must be numeric.' 
+      floatingError2Text: isNumeric ? '' : 'This field must be numeric.'
     });
   },
 
-  _handleInputChange: function(e) {
+  _handleInputChange(e) {
     this.setState({
       propValue: e.target.value
     });
   },
 
-  _handleFloatingInputChange: function(e) {
+  _handleSelectValueChange(name, e) {
+    let change = {};
+    change[name] = e.target.value;
+    this.setState(change);
+  },
+
+  _handleFloatingInputChange(e) {
     this.setState({
       floatingPropValue: e.target.value
     });

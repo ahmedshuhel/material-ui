@@ -1,89 +1,116 @@
-var React = require('react');
-var StylePropable = require('../mixins/style-propable');
-var Transitions = require('../styles/transitions');
-var Colors = require('../styles/colors');
-var AutoPrefix = require('../styles/auto-prefix');
+let React = require('react/addons');
+let PureRenderMixin = React.addons.PureRenderMixin;
+let StylePropable = require('../mixins/style-propable');
+let AutoPrefix = require('../styles/auto-prefix');
+let Colors = require('../styles/colors');
+let Transitions = require('../styles/transitions');
+let ScaleInTransitionGroup = require('../transition-groups/scale-in');
 
-var pulsateDuration = 750;
+const pulsateDuration = 750;
 
-var FocusRipple = React.createClass({
 
-  mixins: [StylePropable],
+let FocusRipple = React.createClass({
+
+  mixins: [PureRenderMixin, StylePropable],
 
   propTypes: {
     color: React.PropTypes.string,
+    innerStyle: React.PropTypes.object,
     opacity: React.PropTypes.number,
     show: React.PropTypes.bool,
-    innerStyle: React.PropTypes.object
   },
 
-  getDefaultProps: function() {
+  getDefaultProps() {
     return {
-      color: Colors.darkBlack
+      color: Colors.darkBlack,
     };
   },
 
-  componentDidMount: function() {
-    this._setRippleSize();
-    this._pulsate();
+  componentDidMount() {
+    if (this.props.show) {
+      this._setRippleSize();
+      this._pulsate();
+    }
   },
 
-  render: function() {
+  componentDidUpdate() {
+    if (this.props.show) {
+      this._setRippleSize();
+      this._pulsate();
+    } else {
+      if (this._timeout) clearTimeout(this._timeout);
+    }
+  },
 
-    var outerStyles = this.mergeAndPrefix({
+  render() {
+
+    let {
+      color,
+      innerStyle,
+      opacity,
+      show,
+      style,
+    } = this.props;
+
+    let mergedRootStyles = this.mergeStyles({
       height: '100%',
       width: '100%',
       position: 'absolute',
       top: 0,
       left: 0,
-      transition: Transitions.easeOut(),
-      transform: this.props.show ? 'scale(1)' : 'scale(0)',
-      opacity: this.props.show ? 1 : 0
-    }, this.props.style);
+    }, style);
 
-    var innerStyles = this.mergeAndPrefix({
+    let innerStyles = this.mergeAndPrefix({
       position: 'absolute',
       height: '100%',
       width: '100%',
       borderRadius: '50%',
-      opacity: this.props.opacity ? this.props.opacity : 0.16,
-      backgroundColor: this.props.color,
-      transition: Transitions.easeOut(pulsateDuration + 'ms', null, null, Transitions.easeInOutFunction)
-    }, this.props.innerStyle);
+      opacity: opacity ? opacity : 0.16,
+      backgroundColor: color,
+      transition: Transitions.easeOut(pulsateDuration + 'ms', 'transform', null, Transitions.easeInOutFunction),
+    }, innerStyle);
+
+    let ripple = show ? (
+      <div ref="innerCircle" style={innerStyles} />
+    ) : null;
 
     return (
-      <div style={outerStyles}>
-        <div ref="innerCircle" style={innerStyles} />
-      </div>
+      <ScaleInTransitionGroup
+        maxScale={0.85}
+        style={mergedRootStyles}>
+        {ripple}
+      </ScaleInTransitionGroup>
     );
   },
 
-  _pulsate: function() {
-    if (!this.isMounted() || !this.props.show) return;
+  _pulsate() {
+    if (!this.isMounted()) return;
 
-    var startScale = 'scale(0.75)';
-    var endScale = 'scale(0.85)';
-    var innerCircle = React.findDOMNode(this.refs.innerCircle);
-    var currentScale = innerCircle.style[AutoPrefix.single('transform')];
-    var nextScale;
+    let innerCircle = React.findDOMNode(this.refs.innerCircle);
+    if (!innerCircle) return;
+
+    let startScale = 'scale(1)';
+    let endScale = 'scale(0.85)';
+    let currentScale = innerCircle.style[AutoPrefix.single('transform')];
+    let nextScale;
 
     currentScale = currentScale || startScale;
     nextScale = currentScale === startScale ?
       endScale : startScale;
 
     innerCircle.style[AutoPrefix.single('transform')] = nextScale;
-    setTimeout(this._pulsate, pulsateDuration);
+    this._timeout = setTimeout(this._pulsate, pulsateDuration);
   },
 
-  _setRippleSize: function() {
-    var el = React.findDOMNode(this);
-    var height = el.offsetHeight;
-    var width = el.offsetWidth;
-    var size = Math.max(height, width);
+  _setRippleSize() {
+    let el = React.findDOMNode(this.refs.innerCircle);
+    let height = el.offsetHeight;
+    let width = el.offsetWidth;
+    let size = Math.max(height, width);
 
     el.style.height = size + 'px';
     el.style.top = (size / 2 * -1) + (height / 2) + 'px';
-  }
+  },
 
 });
 

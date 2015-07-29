@@ -1,35 +1,38 @@
-var React = require('react/addons');
-var TabTemplate = require('./tabTemplate');
-var InkBar = require('../ink-bar');
-var StylePropable = require('../mixins/style-propable.js');
-var Events = require('../utils/events');
+let React = require('react/addons');
+let TabTemplate = require('./tabTemplate');
+let InkBar = require('../ink-bar');
+let StylePropable = require('../mixins/style-propable');
+let Events = require('../utils/events');
 
 
-var Tabs = React.createClass({
+let Tabs = React.createClass({
 
   mixins: [StylePropable],
 
   contextTypes: {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
   },
 
   propTypes: {
     initialSelectedIndex: React.PropTypes.number,
     onActive: React.PropTypes.func,
-    tabWidth: React.PropTypes.number
+    tabWidth: React.PropTypes.number,
+    tabItemContainerStyle: React.PropTypes.object,
+    contentContainerStyle: React.PropTypes.object,
+    inkBarStyle: React.PropTypes.object,
   },
 
-  getInitialState: function(){
-    var selectedIndex = 0;
-    if (this.props.initialSelectedIndex && this.props.initialSelectedIndex < this.props.children.length) {
+  getInitialState(){
+    let selectedIndex = 0;
+    if (this.props.initialSelectedIndex && this.props.initialSelectedIndex < this.getTabCount()) {
       selectedIndex = this.props.initialSelectedIndex;
     }
     return {
-      selectedIndex: selectedIndex
+      selectedIndex: selectedIndex,
     };
   },
 
-  getEvenWidth: function(){
+  getEvenWidth(){
     return (
       parseInt(window
         .getComputedStyle(React.findDOMNode(this))
@@ -37,31 +40,35 @@ var Tabs = React.createClass({
     );
   },
 
-  componentDidMount: function() {
+  getTabCount() {
+    return React.Children.count(this.props.children);
+  },
+
+  componentDidMount() {
     this._updateTabWidth();
     Events.on(window, 'resize', this._updateTabWidth);
   },
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     Events.off(window, 'resize', this._updateTabWidth);
   },
 
-  componentWillReceiveProps: function(newProps) {
+  componentWillReceiveProps(newProps) {
     if (newProps.hasOwnProperty('style')) this._updateTabWidth();
   },
 
-  handleTouchTap: function(tabIndex, tab){
+  handleTouchTap(tabIndex, tab){
     if (this.props.onChange && this.state.selectedIndex !== tabIndex) {
       this.props.onChange(tabIndex, tab);
     }
 
     this.setState({selectedIndex: tabIndex});
     //default CB is _onActive. Can be updated in tab.jsx
-    if(tab.props.onActive) tab.props.onActive(tab);
+    if (tab.props.onActive) tab.props.onActive(tab);
   },
 
-  getStyles: function() {
-    var themeVariables = this.context.muiTheme.component.tabs;
+  getStyles() {
+    let themeVariables = this.context.muiTheme.component.tabs;
 
     return {
       tabItemContainer: {
@@ -71,31 +78,31 @@ var Tabs = React.createClass({
         height: '48px',
         backgroundColor: themeVariables.backgroundColor,
         whiteSpace: 'nowrap',
-        display: 'table'
-      }
+        display: 'table',
+      },
     };
   },
 
-  render: function(){
-    var styles = this.getStyles();
+  render() {
+    let styles = this.getStyles();
 
-    var tabContent = []
-    var width = this.state.fixedWidth ?
-      100 / this.props.children.length +'%' :
+    let tabContent = [];
+    let width = this.state.fixedWidth ?
+      100 / this.getTabCount() +'%' :
       this.props.tabWidth + 'px';
 
-    var left = 'calc(' + width + '*' + this.state.selectedIndex + ')';
+    let left = 'calc(' + width + '*' + this.state.selectedIndex + ')';
 
-    var tabs = React.Children.map(this.props.children, function(tab, index){
-      if(tab.type.displayName === "Tab") {
-
-        if(tab.props.children) {
+    let tabs = React.Children.map(this.props.children, (tab, index) => {
+      if (tab.type.displayName === "Tab") {
+        if (tab.props.children) {
           tabContent.push(React.createElement(TabTemplate, {
             key: index,
-            selected: this.state.selectedIndex === index
+            selected: this.state.selectedIndex === index,
           }, tab.props.children));
-        } else {
-          tabContent.push(undefined)
+        }
+        else {
+          tabContent.push(undefined);
         }
 
         return React.addons.cloneWithProps(tab, {
@@ -103,46 +110,50 @@ var Tabs = React.createClass({
           selected: this.state.selectedIndex === index,
           tabIndex: index,
           width: width,
-          handleTouchTap: this.handleTouchTap
+          handleTouchTap: this.handleTouchTap,
         });
-      } else {
-        var type = tab.type.displayName || tab.type;
+      }
+      else {
+        let type = tab.type.displayName || tab.type;
         throw 'Tabs only accepts Tab Components as children. Found ' +
               type + ' as child number ' + (index + 1) + ' of Tabs';
       }
     }, this);
+
     return (
       <div style={this.mergeAndPrefix(this.props.style)}>
         <div style={this.mergeAndPrefix(styles.tabItemContainer, this.props.tabItemContainerStyle)}>
           {tabs}
         </div>
-        <InkBar left={left} width={width} />
-        <div>
+        <InkBar left={left} width={width} style={this.props.inkBarStyle}/>
+        <div style={this.mergeAndPrefix(this.props.contentContainerStyle)}>
           {tabContent}
         </div>
       </div>
-    )
+    );
   },
 
-  _tabWidthPropIsValid: function() {
+  _tabWidthPropIsValid() {
     return this.props.tabWidth &&
-      (this.props.tabWidth * this.props.children.length <= this.getEvenWidth());
+      (this.props.tabWidth * this.getTabCount() <= this.getEvenWidth());
   },
 
   // Validates that the tabWidth can fit all tabs on the tab bar. If not, the
   // tabWidth is recalculated and fixed.
-  _updateTabWidth: function() {
-    if(this._tabWidthPropIsValid()) {
+  _updateTabWidth() {
+    if (this._tabWidthPropIsValid()) {
       this.setState({
-        fixedWidth: false
-      });
-    } else {
-      this.setState({
-        fixedWidth: true
+        fixedWidth: false,
       });
     }
-  }
+    else {
+      this.setState({
+        fixedWidth: true,
+      });
+    }
+  },
 
 });
 
 module.exports = Tabs;
+

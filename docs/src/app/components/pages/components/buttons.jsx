@@ -1,9 +1,22 @@
-var React = require('react');
-var mui = require('mui');
-var ComponentDoc = require('../../component-doc.jsx');
-var extend = mui.Utils.Extend;
-var Typography = mui.Styles.Typography;
-var {ClearFix, FlatButton, FloatingActionButton, FontIcon, RaisedButton, Tab, Tabs} = mui;
+let React = require('react');
+let ComponentDoc = require('../../component-doc');
+let mui = require('material-ui');
+let ToggleStar = require('svg-icons/toggle/star');
+
+let {
+  ClearFix,
+  FlatButton,
+  FloatingActionButton,
+  FontIcon,
+  RaisedButton,
+  Styles,
+  Tab,
+  Tabs,
+  Utils
+} = mui;
+let extend = Utils.Extend;
+let { Colors, Typography } = Styles;
+
 
 class ButtonPage extends React.Component {
 
@@ -46,13 +59,21 @@ class ButtonPage extends React.Component {
 
     this.codeFloatingActionButton =
       '//Floating Action Buttons\n' +
-      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" />\n' +
+      '<FloatingActionButton>\n' +
+      '  <ToggleStar />\n' +
+      '</FloatingActionButton>\n' +
       '<FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} />\n' +
-      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" disabled={true} />\n' +
-      '<FloatingActionButton iconClassName="muidocs-icon-custom-github" linkButton={true} href="https://github.com/callemall/material-ui" mini={true} secondary={true}/>' +
-      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} disabled={true} />\n' +
-      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" secondary={true} />\n' +
-      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} secondary={true} />';
+      '\n' +
+      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" secondary={true}>\n' +
+      '<FloatingActionButton secondary={true} mini={true} linkButton={true}\n' +
+      '  href="https://github.com/callemall/material-ui" />\n' +
+      '  <ToggleStar />\n' +
+      '</FloatingActionButton>\n' +
+      '\n' +
+      '<FloatingActionButton disabled={true}>\n' +
+      '  <FontIcon className="muidocs-icon-action-grade" />\n' +
+      '</FloatingActionButton>\n' +
+      '<FloatingActionButton iconClassName="muidocs-icon-action-grade" disabled={true} mini={true} />\n';
 
     this.desc = 'This component generates a button element and all props except for ' +
                 'the custom props below will be passed down to the button element. Also, ' +
@@ -63,43 +84,18 @@ class ButtonPage extends React.Component {
         name: 'Flat Button',
         infoArray: [
           {
-            name: 'label or children',
-            type: 'string (label) or HTML/React elements (children)',
-            header: 'required',
-            desc: 'This is what will be displayed inside the button. If a label is specified, the text within the label prop will be displayed.'+
-            ' Otherwise, the component will expect children which will then be displayed (in our example, we are nesting an <input type="file" />'+
-            'and a span that acts as our label to be displayed.) '+
-            'This only applies to flat and raised buttons.'
+            name: 'containerElement',
+            type: 'oneOfType [string, element]',
+            header: 'default: button',
+            desc: 'This component will render a button element by default and an anchor element if linkButton is set to true. ' +
+              'However, you can override this behavior by passing in a string or another react element into this prop. This is ' +
+              'useful for generating link buttons with the react router link element.'
           },
           {
-            name: 'labelStyle',
-            type: 'object',
+            name: 'disabled',
+            type: 'bool',
             header: 'optional',
-            desc: 'Override the inline-styles of the button\'s label element.'
-          },
-          {
-            name: 'linkButton',
-            type: 'bool',
-            header: 'default: false',
-            desc: 'If true, an anchor element will be generated instead of a button element.'
-          },
-          {
-            name: 'primary',
-            type: 'bool',
-            header: 'default: false',
-            desc: 'If true, the button will use the primary button colors.'
-          },
-          {
-            name: 'secondary',
-            type: 'bool',
-            header: 'default: false',
-            desc: 'If true, the button will use the secondary button colors.'
-          },
-          {
-            name: 'style',
-            type: 'object',
-            header: 'optional',
-            desc: 'Override the inline-styles of the button\'s root element.'
+            desc: 'Disables the button if set to true.'
           },
           {
             name: 'hoverColor',
@@ -108,16 +104,75 @@ class ButtonPage extends React.Component {
             desc: 'Override the inline hover color of the button\'s root element.'
           },
           {
+            name: 'label or children',
+            type: 'string (label) or HTML/React elements (children)',
+            header: 'required',
+            desc: 'This is what will be displayed inside the button. If a label is specified, the text within the label prop will be displayed.'+
+            ' Otherwise, the component will expect children which will then be displayed (in our example, we are nesting an <input type="file" />'+
+            'and a span that acts as our label to be displayed.) '+
+            'This only applies to flat and raised buttons.'
+          },
+          {
+            name: 'labelStyle',
+            type: 'object',
+            header: 'optional',
+            desc: 'Override the inline-styles of the button\'s label element.'
+          },
+          {
+            name: 'linkButton',
+            type: 'bool',
+            header: 'default: false',
+            desc: 'If true, an anchor element will be generated instead of a button element.'
+          },
+          {
+            name: 'primary',
+            type: 'bool',
+            header: 'default: false',
+            desc: 'If true, the button will use the primary button colors.'
+          },
+          {
+            name: 'secondary',
+            type: 'bool',
+            header: 'default: false',
+            desc: 'If true, the button will use the secondary button colors.'
+          },
+          {
             name: 'rippleColor',
             type: 'string',
             header: 'optional',
             desc: 'Override the inline color of the button\'s ripple element.'
+          },
+          {
+            name: 'style',
+            type: 'object',
+            header: 'optional',
+            desc: 'Override the inline-styles of the button\'s root element.'
           }
         ]
       },
       {
         name: 'Raised Button',
         infoArray: [
+          {
+            name: 'containerElement',
+            type: 'oneOfType [string, element]',
+            header: 'default: button',
+            desc: 'This component will render a button element by default and an anchor element if linkButton is set to true. ' +
+              'However, you can override this behavior by passing in a string or another react element into this prop. This is ' +
+              'useful for generating link buttons with the react router link element.'
+          },
+          {
+            name: 'disabled',
+            type: 'bool',
+            header: 'optional',
+            desc: 'Disables the button if set to true.'
+          },
+          {
+            name: 'fullWidth',
+            type: 'bool',
+            header: 'optional',
+            desc: 'If true, will change the width of the button to span the full width of the parent.'
+          },
           {
             name: 'label or children',
             type: 'string (label) or HTML/React elements (children)',
@@ -150,6 +205,30 @@ class ButtonPage extends React.Component {
             type: 'bool',
             header: 'default: false',
             desc: 'If true, the button will use the secondary button colors.'
+          },
+          {
+            name: 'backgroundColor',
+            type: 'string',
+            header: 'optional',
+            desc: 'Override the background color. Always takes precedence unless the button is disabled.'
+          },
+          {
+            name: 'labelColor',
+            type: 'string',
+            header: 'optional',
+            desc: 'Override the label color. Always takes precedence unless the button is disabled.'
+          },
+          {
+            name: 'disabledBackgroundColor',
+            type: 'string',
+            header: 'optional',
+            desc: 'Override the background color if the button is disabled.'
+          },
+          {
+            name: 'disabledLabelColor',
+            type: 'string',
+            header: 'optional',
+            desc: 'Override the label color if the button is disabled.'
           },
           {
             name: 'style',
@@ -162,6 +241,20 @@ class ButtonPage extends React.Component {
       {
         name: 'Floating Action Button',
         infoArray: [
+          {
+            name: 'containerElement',
+            type: 'oneOfType [string, element]',
+            header: 'default: button',
+            desc: 'This component will render a button element by default and an anchor element if linkButton is set to true. ' +
+              'However, you can override this behavior by passing in a string or another react element into this prop. This is ' +
+              'useful for generating link buttons with the react router link element.'
+          },
+          {
+            name: 'disabled',
+            type: 'bool',
+            header: 'optional',
+            desc: 'Disables the button if set to true.'
+          },
           {
             name: 'iconClassName',
             type: 'string',
@@ -208,7 +301,7 @@ class ButtonPage extends React.Component {
   }
 
   getStyles() {
-    var styles = {
+    let styles = {
       container: {
         textAlign: 'center',
         marginBottom: '16px'
@@ -257,7 +350,8 @@ class ButtonPage extends React.Component {
         verticalAlign: 'middle',
         float: 'left',
         paddingLeft: '12px',
-        lineHeight: '36px'
+        lineHeight: '36px',
+        color: Colors.cyan500
       },
       exampleButtonIcon: {
         color: Typography.textFullWhite
@@ -278,7 +372,7 @@ class ButtonPage extends React.Component {
   }
 
   render() {
-    var styles = this.getStyles();
+    let styles = this.getStyles();
     return (
       <div>
         <h2 style={styles.headline}>Buttons</h2>
@@ -359,7 +453,9 @@ class ButtonPage extends React.Component {
               componentInfo={this.componentInfo.slice(2)}>
               <div style={styles.groupFloatingAction}>
                 <div style={styles.container}>
-                  <FloatingActionButton iconClassName="muidocs-icon-action-grade" />
+                  <FloatingActionButton>
+                    <ToggleStar />
+                  </FloatingActionButton>
                 </div>
                 <div style={styles.container}>
                   <FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} />
@@ -370,12 +466,16 @@ class ButtonPage extends React.Component {
                   <FloatingActionButton iconClassName="muidocs-icon-action-grade" secondary={true} />
                 </div>
                 <div style={styles.container}>
-                  <FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} secondary={true} />
+                  <FloatingActionButton mini={true} secondary={true}>
+                    <ToggleStar />
+                  </FloatingActionButton>
                 </div>
               </div>
               <div style={styles.groupFloatingAction}>
                 <div style={styles.container}>
-                  <FloatingActionButton iconClassName="muidocs-icon-action-grade" disabled={true} />
+                  <FloatingActionButton disabled={true}>
+                    <FontIcon className="muidocs-icon-action-grade" />
+                  </FloatingActionButton>
                 </div>
                 <div style={styles.container}>
                   <FloatingActionButton iconClassName="muidocs-icon-action-grade" mini={true} disabled={true} />
